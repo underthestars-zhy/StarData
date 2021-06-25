@@ -52,6 +52,7 @@ def get_type(p_type: str) -> str:
     else:
         return "NULL"
 
+
 def get_json(file_path: str) -> dict:
     f = open(file_path)
     read = str(f.read())
@@ -71,3 +72,5 @@ class StarData:
 
         if old_data == {}:
             creat_db(new_data)
+
+        self.data = new_data
