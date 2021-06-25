@@ -1,20 +1,27 @@
 import json
 
 
+def creat_db(db_data: dict):
+    with open("config/data.json", 'w') as f:
+        json.dump(db_data, f)
+
+
+def get_json(file_path: str) -> dict:
+    f = open(file_path)
+    read = str(f.read())
+    if read != "":
+        result = dict(json.loads(read))
+        f.close()
+        return result
+    else:
+        f.close()
+        return {}
+
+
 class StarData:
     def __init__(self):
-        new_data = None
-        old_data = None
-        with open("data.json") as f:
-            if f.read() != "":
-                new_data = json.load(f)
-            else:
-                return
-        with open("config/data.json") as f:
-            if f.read() != "":
-                old_data = json.load(f)
-            else:
-                self.creat_db(new_data)
+        new_data = get_json("./data.json")
+        old_data = get_json("./config/data.json")
 
-    def creat_db(self, db_data):
-        
+        if old_data == {}:
+            creat_db(new_data)

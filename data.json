@@ -1,18 +1,25 @@
-[
-  {
-    "db_name": "star",
-    "db_version": 1.0,
-    "db_table": [
-      {
-        "table_name": "main",
-        "table_parameter": [
-          {
-            "parameter_name": "id",
-            "is_primary": true,
-            "parameter_type": "uuid"
-          }
-        ]
-      }
-    ]
-  }
-]
+{
+  "data_version": 1.0,
+  "db": [
+    {
+      "db_name": "star",
+      "db_table": [
+        {
+          "table_name": "main",
+          "table_parameter": [
+            {
+              "parameter_name": "id",
+              "is_primary": true,
+              "parameter_type": "uuid"
+            },
+            {
+              "parameter_name": "name",
+              "is_primary": false,
+              "parameter_type": "string"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
