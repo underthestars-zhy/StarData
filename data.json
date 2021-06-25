@@ -10,11 +10,13 @@
             {
               "parameter_name": "id",
               "is_primary": true,
+              "not_null": true,
               "parameter_type": "uuid"
             },
             {
               "parameter_name": "name",
               "is_primary": false,
+              "not_null": true,
               "parameter_type": "string"
             }
           ]
