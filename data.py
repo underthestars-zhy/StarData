@@ -11,7 +11,7 @@ def creat_db(db_data: dict):
         json.dump(db_data, f)
 
     for db in db_data["db"]:
-        conn = sqlite3.connect(f'{db["db_name"]}.db')
+        conn = sqlite3.connect(f'./database/{db["db_name"]}.db')
         c = conn.cursor()
 
         for table in db["db_table"]:
@@ -128,7 +128,7 @@ class StarData:
             return error.ValidationError('The key is wrong, please check the salt and key')
 
         if self.verification(content['db_name'], content['table_name'], list(dict(content['new_data']).keys())):
-            conn = sqlite3.connect(f"{content['db_name']}.db")
+            conn = sqlite3.connect(f"./database/{content['db_name']}.db")
             c = conn.cursor()
             table_name = content['table_name'].upper()
 
@@ -155,7 +155,7 @@ class StarData:
             return error.ValidationError('The key is wrong, please check the salt and key')
 
         if self.verification(content['db_name'], content['table_name'], list(dict(content['insert_data']).keys())):
-            conn = sqlite3.connect(f"{content['db_name']}.db")
+            conn = sqlite3.connect(f"./database/{content['db_name']}.db")
             c = conn.cursor()
             table_name = content['table_name'].upper()
             sql_command = "INSERT " + "INTO " + table_name + " "
@@ -202,7 +202,7 @@ class StarData:
             return error.ValidationError('The key is wrong, please check the salt and key')
 
         if self.verification(content['db_name'], content['table_name']):
-            conn = sqlite3.connect(f"{content['db_name']}.db")
+            conn = sqlite3.connect(f"./database/{content['db_name']}.db")
             c = conn.cursor()
 
             table_name = content['table_name'].upper()
@@ -215,6 +215,48 @@ class StarData:
             conn.close()
 
             return success.Success("Data deleted successfully")
+        else:
+            return error.InsertError('The database name or table name is incorrect')
+
+    def select(self, content: dict):
+        if str(content['key']).lower() != info.get_md5():
+            return error.ValidationError('The key is wrong, please check the salt and key')
+
+        if self.verification(content['db_name'], content['table_name']):
+            conn = sqlite3.connect(f"./database/{content['db_name']}.db")
+            c = conn.cursor()
+            table_name = content['table_name'].upper()
+
+            sql_command = "SELECT "
+            count = 0
+            length = len(content['select_parameter'])
+
+            for p in content['select_parameter']:
+                sql_command += p
+
+                if count != (length - 1):
+                    sql_command += ", "
+
+                count += 1
+
+            sql_command += " from "
+            sql_command += table_name
+            if content['other']:
+                sql_command += content['other']
+
+            cursor = c.execute(sql_command)
+
+            values = []
+            for row in cursor:
+                _c = 0
+                res = {}
+                for p in content['select_parameter']:
+                    res[p] = row[_c]
+                values.append(res)
+
+            conn.close()
+
+            return success.Select("Successful search", values)
         else:
             return error.InsertError('The database name or table name is incorrect')
 

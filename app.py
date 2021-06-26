@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from data import StarData
 from info import info
 from pydantic import BaseModel
+from typing import Optional
 
 app = FastAPI()
 data = StarData()
@@ -28,6 +29,14 @@ class DeleteItem(BaseModel):
     db_name: str
     table_name: str
     condition: str
+
+
+class SelectItem(BaseModel):
+    key: str
+    db_name: str
+    table_name: str
+    select_parameter: list
+    other: Optional[str]
 
 
 @app.get("/db_info")
@@ -58,5 +67,13 @@ def update(item: UpdateItem, api: str):
 def delete(item: DeleteItem, api: str):
     if api == info.api_key:
         return data.delete(item.dict())
+    else:
+        return error.ValidationError('Unable to verify API key')
+
+
+@app.post("/select")
+def select(item: SelectItem, api: str):
+    if api == info.api_key:
+        return data.select(item.dict())
     else:
         return error.ValidationError('Unable to verify API key')
