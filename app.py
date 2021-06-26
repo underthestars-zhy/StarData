@@ -36,7 +36,7 @@ class SelectItem(BaseModel):
     db_name: str
     table_name: str
     select_parameter: list
-    other: Optional[str]
+    other: Optional[str] = None
 
 
 @app.get("/db_info")

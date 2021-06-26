@@ -127,7 +127,12 @@ class StarData:
         if str(content['key']).lower() != info.get_md5():
             return error.ValidationError('The key is wrong, please check the salt and key')
 
-        if self.verification(content['db_name'], content['table_name'], list(dict(content['new_data']).keys())):
+        all_parameter = []
+        for i in content['new_data']:
+            for x in content['new_data'][i]:
+                all_parameter.append(x)
+
+        if self.verification(content['db_name'], content['table_name'], all_parameter):
             conn = sqlite3.connect(f"./database/{content['db_name']}.db")
             c = conn.cursor()
             table_name = content['table_name'].upper()
