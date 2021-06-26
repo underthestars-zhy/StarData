@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a20ac7b7-7feb-4513-ace1-9574edd4d4a6" name="Changes" comment="Update Value">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/data.py" afterDir="false" />
+    <list default="true" id="a20ac7b7-7feb-4513-ace1-9574edd4d4a6" name="Changes" comment="Bug Fix">
+      <change beforePath="$PROJECT_DIR$/data.json" beforeDir="false" afterPath="$PROJECT_DIR$/data.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,7 +81,7 @@
       <workItem from="1624613514367" duration="5737000" />
       <workItem from="1624624546288" duration="18283000" />
       <workItem from="1624693594325" duration="54000" />
-      <workItem from="1624693664807" duration="10818000" />
+      <workItem from="1624693664807" duration="11121000" />
     </task>
     <task id="LOCAL-00001" summary="Creat">
       <created>1624624690711</created>
@@ -177,7 +174,28 @@
       <option name="project" value="LOCAL" />
       <updated>1624714468478</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Bug Fix">
+      <created>1624717813553</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1624717813553</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Bug Fix">
+      <created>1624717941575</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1624717941575</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Bug Fix">
+      <created>1624717956601</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1624717956601</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -209,7 +227,8 @@
     <MESSAGE value="Delete Value and change something" />
     <MESSAGE value="Select Value" />
     <MESSAGE value="Update Value" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update Value" />
+    <MESSAGE value="Bug Fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bug Fix" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/StarData$app.coverage" NAME="app 覆盖结果" MODIFIED="1624676499375" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
