@@ -99,6 +99,17 @@ def get_json(file_path: str) -> dict:
         return {}
 
 
+def expression_filtering(expression: str) -> str:
+    if expression.upper() == "BETWEEN" or expression.upper() == "LIKE" or expression.upper() == "IN":
+        return expression.upper()
+    elif expression == "!=":
+        return "<>"
+    elif expression == "==":
+        return "="
+    else:
+        return expression
+
+
 class StarData:
     def __init__(self):
         new_data = get_json("./data.json")
@@ -126,9 +137,30 @@ class StarData:
         if str(content['key']).lower() != info.get_md5():
             return error.ValidationError('The key is wrong, please check the salt and key')
 
-        if self.verification(content['db_name'], content['table_name'], list(dict(content['insert_data']).keys())):
+        if self.verification(content['db_name'], content['table_name'], list(dict(content['new_data']).keys())):
             conn = sqlite3.connect(f"{content['db_name']}.db")
             c = conn.cursor()
+            table_name = content['table_name'].upper()
+
+            for u in content['new_data']:
+                sql_command = f"UPDATE {table_name} set "
+                sql_command += str(u).upper()
+                sql_command += " = "
+                sql_command += get_value(self.get_type(content['db_name'], content['table_name'], u),
+                                         content['new_data'][u])
+                sql_command += " where "
+                print(content['conditions'])
+                condition = content['conditions'][u]
+
+                sql_command += str(condition['parameter']).upper()
+                sql_command += expression_filtering(str(condition['expression']))
+                sql_command += get_value(self.get_type(content['db_name'], content['table_name'], u),
+                                         condition['value'])
+
+                c.execute(sql_command)
+
+            conn.commit()
+            conn.close()
 
             return success.Success(f"Update data successfully")
         else:
