@@ -1,5 +1,8 @@
 import json
 import sqlite3
+import uuid
+import success
+import error
 
 
 def creat_db(db_data: dict):
@@ -40,7 +43,7 @@ def creat_db(db_data: dict):
 
 def get_type(p_type: str) -> str:
     if p_type.lower() == "uuid":
-        return "INTEGER"
+        return "TEXT"
     elif p_type.lower() == "string":
         return "NTEXT"
     elif p_type.lower() == "int":
@@ -49,6 +52,36 @@ def get_type(p_type: str) -> str:
         return "DOUBLE"
     elif p_type.lower() == "en-str":
         return "TEXT"
+    else:
+        return "NULL"
+
+
+def get_default(p_type: str) -> str:
+    if p_type.lower() == "uuid":
+        return f"'{str(uuid.uuid1())}'"
+    elif p_type.lower() == "string":
+        return "'this is a null value'"
+    elif p_type.lower() == "int":
+        return "0"
+    elif p_type.lower() == "double":
+        return "0.0"
+    elif p_type.lower() == "en-str":
+        return "'this is a null value'"
+    else:
+        return "NULL"
+
+
+def get_value(p_type: str, raw: str) -> str:
+    if p_type.lower() == "uuid":
+        return f"'{raw}'"
+    elif p_type.lower() == "string":
+        return f"'{raw}'"
+    elif p_type.lower() == "int":
+        return raw
+    elif p_type.lower() == "double":
+        return raw
+    elif p_type.lower() == "en-str":
+        return f"'{raw}'"
     else:
         return "NULL"
 
@@ -80,16 +113,81 @@ class StarData:
             if str(db['db_name']).lower() == db_name.lower():
                 for table in db['db_table']:
                     if str(table['table_name']).lower() == table_name.lower():
-                        for p in table['table_parameter']:
-                            if p['parameter_name'] not in parameter_names:
+                        parameters = [str(x['parameter_name']).lower() for x in table['table_parameter']]
+                        for p in parameter_names:
+                            if str(p).lower() not in parameters:
                                 return False
                         return True
                 return False
         return False
 
-    def insert(self, content: dict) -> dict:
+    def insert(self, content: dict):
         if self.verification(content['db_name'], content['table_name'], list(dict(content['insert_data']).keys())):
             conn = sqlite3.connect(f"{content['db_name']}.db")
             c = conn.cursor()
+            table_name = content['table_name'].upper()
+            sql_command = "INSERT " + "INTO " + table_name + " "
+            p_info = "("
+            p_value = " VALUES ("
+
+            parameter_info = self.get_parameter_info(content['db_name'], content['table_name'])
+            length = len(parameter_info)
+            count = 0
+
+            insert_keys = [str(x).upper() for x in dict(content['insert_data']).keys()]
+            insert_data = [str(x) for x in dict(content['insert_data'])]
+
+            for p in parameter_info:
+                p_info += p
+
+                print(p)
+                if p in insert_keys:
+                    p_value += get_value(self.get_type(content['db_name'], content['table_name'], p),
+                                         insert_data[insert_keys.index(str(p).upper())])
+                else:
+                    p_value += get_default(self.get_type(content['db_name'], content['table_name'], p))
+
+                if count != (length - 1):
+                    p_info += ", "
+                    p_value += ", "
+
+                count += 1
+
+            p_info += ")"
+            p_value += ")"
+
+            sql_command = sql_command + p_info + p_value
+
+            c.execute(sql_command)
+            conn.commit()
+            conn.close()
+
+            return success.Success(f"Insert data successfully {p_value}")
         else:
-            return
+            return error.InsertError('The database name or table name is incorrect')
+
+    def get_parameter_info(self, db_name: str, table_name: str) -> list:
+        res = []
+
+        for db in self.data['db']:
+            if str(db['db_name']).lower() == db_name.lower():
+                for table in db['db_table']:
+                    if str(table['table_name']).lower() == table_name.lower():
+                        for p in table['table_parameter']:
+                            res.append(str(p['parameter_name']).upper())
+
+        return res
+
+    def get_type(self, db_name: str, table_name: str, parameter_name: str) -> str:
+        res = ""
+
+        for db in self.data['db']:
+            if str(db['db_name']).lower() == db_name.lower():
+                for table in db['db_table']:
+                    if str(table['table_name']).lower() == table_name.lower():
+                        for p in table['table_parameter']:
+                            if str(p['parameter_name']).lower() == parameter_name.lower():
+                                res = p['parameter_type']
+                                return res
+
+        return res
