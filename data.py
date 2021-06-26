@@ -135,12 +135,11 @@ class StarData:
             count = 0
 
             insert_keys = [str(x).upper() for x in dict(content['insert_data']).keys()]
-            insert_data = [str(x) for x in dict(content['insert_data'])]
+            insert_data = [str(content['insert_data'][x]) for x in dict(content['insert_data'])]
 
             for p in parameter_info:
                 p_info += p
 
-                print(p)
                 if p in insert_keys:
                     p_value += get_value(self.get_type(content['db_name'], content['table_name'], p),
                                          insert_data[insert_keys.index(str(p).upper())])
