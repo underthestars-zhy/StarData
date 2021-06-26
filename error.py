@@ -12,3 +12,7 @@ class ValidationError(Error):
 
 class InsertError(Error):
     _type = 'insert error'
+
+
+class UpdateError(Error):
+    _type = "update error"

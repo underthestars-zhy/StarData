@@ -3,6 +3,7 @@ import sqlite3
 import uuid
 import success
 import error
+from info import info
 
 
 def creat_db(db_data: dict):
@@ -121,7 +122,22 @@ class StarData:
                 return False
         return False
 
+    def update(self, content: dict):
+        if str(content['key']).lower() != info.get_md5():
+            return error.ValidationError('The key is wrong, please check the salt and key')
+
+        if self.verification(content['db_name'], content['table_name'], list(dict(content['insert_data']).keys())):
+            conn = sqlite3.connect(f"{content['db_name']}.db")
+            c = conn.cursor()
+
+            return success.Success(f"Update data successfully")
+        else:
+            return error.UpdateError('The database name or table name is incorrect')
+
     def insert(self, content: dict):
+        if str(content['key']).lower() != info.get_md5():
+            return error.ValidationError('The key is wrong, please check the salt and key')
+
         if self.verification(content['db_name'], content['table_name'], list(dict(content['insert_data']).keys())):
             conn = sqlite3.connect(f"{content['db_name']}.db")
             c = conn.cursor()
