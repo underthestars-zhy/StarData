@@ -84,7 +84,7 @@ def get_value(p_type: str, raw: str) -> str:
     elif p_type.lower() == "en-str":
         return f"'{raw}'"
     else:
-        return "NULL"
+        return raw
 
 
 def get_json(file_path: str) -> dict:
@@ -99,17 +99,6 @@ def get_json(file_path: str) -> dict:
         return {}
 
 
-def expression_filtering(expression: str) -> str:
-    if expression.upper() == "BETWEEN" or expression.upper() == "LIKE" or expression.upper() == "IN":
-        return expression.upper()
-    elif expression == "!=":
-        return "<>"
-    elif expression == "==":
-        return "="
-    else:
-        return expression
-
-
 class StarData:
     def __init__(self):
         new_data = get_json("./data.json")
@@ -120,15 +109,16 @@ class StarData:
 
         self.data = new_data
 
-    def verification(self, db_name: str, table_name: str, parameter_names: list) -> bool:
+    def verification(self, db_name: str, table_name: str, parameter_names: list = None) -> bool:
         for db in self.data['db']:
             if str(db['db_name']).lower() == db_name.lower():
                 for table in db['db_table']:
                     if str(table['table_name']).lower() == table_name.lower():
-                        parameters = [str(x['parameter_name']).lower() for x in table['table_parameter']]
-                        for p in parameter_names:
-                            if str(p).lower() not in parameters:
-                                return False
+                        if parameter_names:
+                            parameters = [str(x['parameter_name']).lower() for x in table['table_parameter']]
+                            for p in parameter_names:
+                                if str(p).lower() not in parameters:
+                                    return False
                         return True
                 return False
         return False
@@ -149,20 +139,14 @@ class StarData:
                 sql_command += get_value(self.get_type(content['db_name'], content['table_name'], u),
                                          content['new_data'][u])
                 sql_command += " where "
-                print(content['conditions'])
-                condition = content['conditions'][u]
-
-                sql_command += str(condition['parameter']).upper()
-                sql_command += expression_filtering(str(condition['expression']))
-                sql_command += get_value(self.get_type(content['db_name'], content['table_name'], u),
-                                         condition['value'])
+                sql_command += content['conditions'][u]
 
                 c.execute(sql_command)
 
             conn.commit()
             conn.close()
 
-            return success.Success(f"Update data successfully")
+            return success.Success("Update data successfully")
         else:
             return error.UpdateError('The database name or table name is incorrect')
 
@@ -210,6 +194,27 @@ class StarData:
             conn.close()
 
             return success.Success(f"Insert data successfully {p_value}")
+        else:
+            return error.InsertError('The database name or table name is incorrect')
+
+    def delete(self, content: dict):
+        if str(content['key']).lower() != info.get_md5():
+            return error.ValidationError('The key is wrong, please check the salt and key')
+
+        if self.verification(content['db_name'], content['table_name']):
+            conn = sqlite3.connect(f"{content['db_name']}.db")
+            c = conn.cursor()
+
+            table_name = content['table_name'].upper()
+            sql_command = "DELETE from "
+            sql_command += f"{table_name} where "
+            sql_command += content['condition']
+
+            c.execute(sql_command)
+            conn.commit()
+            conn.close()
+
+            return success.Success("Data deleted successfully")
         else:
             return error.InsertError('The database name or table name is incorrect')
 
