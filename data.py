@@ -74,3 +74,22 @@ class StarData:
             creat_db(new_data)
 
         self.data = new_data
+
+    def verification(self, db_name: str, table_name: str, parameter_names: list) -> bool:
+        for db in self.data['db']:
+            if str(db['db_name']).lower() == db_name.lower():
+                for table in db['db_table']:
+                    if str(table['table_name']).lower() == table_name.lower():
+                        for p in table['table_parameter']:
+                            if p['parameter_name'] not in parameter_names:
+                                return False
+                        return True
+                return False
+        return False
+
+    def insert(self, content: dict) -> dict:
+        if self.verification(content['db_name'], content['table_name'], list(dict(content['insert_data']).keys())):
+            conn = sqlite3.connect(f"{content['db_name']}.db")
+            c = conn.cursor()
+        else:
+            return
