@@ -110,7 +110,7 @@ Connection: close
 User-Agent: Paw/3.2.2 (Macintosh; OS X/12.0.0) GCDHTTPRequest
 ```
 ### 插入数据
-* 请求方式`get`
+* 请求方式`post`
 * 需要api和key
 * 使用json发生post数据
 * 对于没有给出的参数会自动填充默认值
@@ -141,7 +141,7 @@ User-Agent: Paw/3.2.2 (Macintosh; OS X/12.0.0) GCDHTTPRequest
 }
 ```
 ### 更新数据
-* 请求方式`get`
+* 请求方式`post`
 * 需要api和key
 * 使用json发生post数据
 * 每个数据更新组的标识符要在`conditions`中有对应值
@@ -190,7 +190,7 @@ User-Agent: Paw/3.2.2 (Macintosh; OS X/12.0.0) GCDHTTPRequest
 }
 ```
 ### 删除数据
-* 请求方式`get`
+* 请求方式`post`
 * 需要api和key
 * 使用json发生post数据
 ```json
@@ -216,7 +216,7 @@ User-Agent: Paw/3.2.2 (Macintosh; OS X/12.0.0) GCDHTTPRequest
 }
 ```
 ### 搜索数据
-* 请求方式`get`
+* 请求方式`post`
 * 需要api和key
 * 使用json发生post数据
 * 返回值有`value_dict`即以dict组成的数据，类似于`[{}]`
