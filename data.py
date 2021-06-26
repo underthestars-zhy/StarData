@@ -134,10 +134,20 @@ class StarData:
 
             for u in content['new_data']:
                 sql_command = f"UPDATE {table_name} set "
-                sql_command += str(u).upper()
-                sql_command += " = "
-                sql_command += get_value(self.get_type(content['db_name'], content['table_name'], u),
-                                         content['new_data'][u])
+                count = 0
+                length = len(content['new_data'][u])
+
+                for p in content['new_data'][u]:
+                    sql_command += str(p).upper()
+                    sql_command += " = "
+                    sql_command += get_value(self.get_type(content['db_name'], content['table_name'], p),
+                                             content['new_data'][u][p])
+
+                    if count != (length - 1):
+                        sql_command += ", "
+
+                    count += 1
+
                 sql_command += " where "
                 sql_command += content['conditions'][u]
 
@@ -242,7 +252,9 @@ class StarData:
             sql_command += " from "
             sql_command += table_name
             if content['other']:
+                sql_command += ' '
                 sql_command += content['other']
+            print(sql_command)
 
             cursor = c.execute(sql_command)
 

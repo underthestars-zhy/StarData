@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from data import StarData
 from info import info
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Dict
 
 app = FastAPI()
 data = StarData()
@@ -21,7 +21,7 @@ class UpdateItem(BaseModel):
     db_name: str
     table_name: str
     conditions: dict
-    new_data: dict
+    new_data: Dict[str, dict]
 
 
 class DeleteItem(BaseModel):

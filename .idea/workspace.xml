@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a20ac7b7-7feb-4513-ace1-9574edd4d4a6" name="Changes" comment="Delete Value and change something">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+    <list default="true" id="a20ac7b7-7feb-4513-ace1-9574edd4d4a6" name="Changes" comment="Select Value">
       <change beforePath="$PROJECT_DIR$/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/success.py" beforeDir="false" afterPath="$PROJECT_DIR$/success.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +81,7 @@
       <workItem from="1624613514367" duration="5737000" />
       <workItem from="1624624546288" duration="18283000" />
       <workItem from="1624693594325" duration="54000" />
-      <workItem from="1624693664807" duration="6783000" />
+      <workItem from="1624693664807" duration="7314000" />
     </task>
     <task id="LOCAL-00001" summary="Creat">
       <created>1624624690711</created>
@@ -164,7 +160,14 @@
       <option name="project" value="LOCAL" />
       <updated>1624710844719</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Select Value">
+      <created>1624713727348</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1624713727349</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -194,7 +197,8 @@
     <MESSAGE value="MD5" />
     <MESSAGE value="Update Value and README.md" />
     <MESSAGE value="Delete Value and change something" />
-    <option name="LAST_COMMIT_MESSAGE" value="Delete Value and change something" />
+    <MESSAGE value="Select Value" />
+    <option name="LAST_COMMIT_MESSAGE" value="Select Value" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/StarData$app.coverage" NAME="app 覆盖结果" MODIFIED="1624676499375" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
