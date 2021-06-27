@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a20ac7b7-7feb-4513-ace1-9574edd4d4a6" name="Changes" comment="Bug Fix">
-      <change afterPath="$PROJECT_DIR$/schemas.py" afterDir="false" />
+    <list default="true" id="fbc45a74-85d2-4e91-9abf-5742cfc3e52a" name="更改" comment="Format file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/data.json" beforeDir="false" afterPath="$PROJECT_DIR$/config/data.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data.json" beforeDir="false" afterPath="$PROJECT_DIR$/data.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/success.py" beforeDir="false" afterPath="$PROJECT_DIR$/success.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +83,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="a20ac7b7-7feb-4513-ace1-9574edd4d4a6" name="Changes" comment="" />
+      <changelist id="" name="Changes" comment="" />
       <created>1624612346648</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -91,7 +92,7 @@
       <workItem from="1624613514367" duration="5737000" />
       <workItem from="1624624546288" duration="18283000" />
       <workItem from="1624693594325" duration="54000" />
-      <workItem from="1624693664807" duration="14759000" />
+      <workItem from="1624693664807" duration="18795000" />
     </task>
     <task id="LOCAL-00001" summary="Creat">
       <created>1624624690711</created>
@@ -219,7 +220,21 @@
       <option name="project" value="LOCAL" />
       <updated>1624718070017</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Small change">
+      <created>1624755504072</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1624755504072</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Format file">
+      <created>1624755592861</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1624755592861</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -252,7 +267,9 @@
     <MESSAGE value="Select Value" />
     <MESSAGE value="Update Value" />
     <MESSAGE value="Bug Fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="Bug Fix" />
+    <MESSAGE value="Small change" />
+    <MESSAGE value="Format file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Format file" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/StarData$app.coverage" NAME="app 覆盖结果" MODIFIED="1624676499375" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

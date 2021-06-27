@@ -6,13 +6,15 @@ import error
 import schemas
 from info import info
 import os
+from os.path import exists
 
 
 def creat_db(db_data: dict):
     with open("./config/data.json", 'w') as f:
         json.dump(db_data, f)
 
-    os.mkdir("./database")
+    if not exists("./database"):
+        os.mkdir("./database")
 
     for db in db_data["db"]:
         conn = sqlite3.connect(f'./database/{db["db_name"]}.db')
@@ -126,6 +128,32 @@ class StarData:
                         return True
                 return False
         return False
+
+    def easy_get(self, api: str, db_name: str, table_name: str, name: str, value):
+        if api != info.api_key:
+            return error.ValidationError('Unable to verify API key')
+
+        if self.verification(db_name, table_name):
+            conn = sqlite3.connect(f"./database/{db_name}.db")
+            c = conn.cursor()
+            table_name = table_name.upper()
+            p = self.get_primary(db_name, table_name)
+
+            sql_command = f"SELECT {name.upper()}"
+            sql_command += f" from {table_name}"
+            sql_command += f" where {p[0].upper()}={get_value(p[1], value)}"
+
+            res = c.execute(sql_command)
+
+            v = None
+            for row in res:
+                v = row[0]
+
+            conn.close()
+
+            return success.EasyGet(v)
+        else:
+            return error.UpdateError('The database name or table name is incorrect')
 
     def update(self, content: schemas.UpdateItem, api: str):
         if api != info.api_key:
@@ -323,4 +351,18 @@ class StarData:
                                 res = p['parameter_type']
                                 return res
 
+        return res
+
+    def get_primary(self, db_name: str, table_name: str) -> [str, str]:
+        res = ["", ""]
+
+        for db in self.data['db']:
+            if str(db['db_name']).lower() == db_name.lower():
+                for table in db['db_table']:
+                    if str(table['table_name']).lower() == table_name.lower():
+                        for p in table['table_parameter']:
+                            if bool(p['is_primary']):
+                                res[0] = p['parameter_name']
+                                res[1] = p['parameter_type']
+                                return res
         return res

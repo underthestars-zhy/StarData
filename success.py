@@ -15,3 +15,9 @@ class Select:
             for i in x:
                 res.append(x[i])
             self.value_list.append(res)
+
+
+class EasyGet:
+    def __init__(self, value):
+        self.type = "get"
+        self.value = value

@@ -29,3 +29,8 @@ def delete(item: DeleteItem, api: str):
 @app.post("/select")
 def select(item: SelectItem, api: str):
     return data.select(item, api)
+
+
+@app.get("/easy_get")
+def get_value(api: str, db_name: str, table_name: str, name: str, value):
+    return data.easy_get(api, db_name, table_name, name, value)
