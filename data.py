@@ -155,6 +155,29 @@ class StarData:
         else:
             return error.UpdateError('The database name or table name is incorrect')
 
+    def get_all_items(self, api: str, db_name: str, table_name: str):
+        if api != info.api_key:
+            return error.ValidationError('Unable to verify API key')
+
+        if self.verification(db_name, table_name):
+            conn = sqlite3.connect(f"./database/{db_name}.db")
+            c = conn.cursor()
+            table_name = table_name.upper()
+
+            sql_command = f"SELECT *"
+            sql_command += f" from {table_name}"
+
+            cursor = c.execute(sql_command)
+            res = []
+            parameters = self.get_parameter_info(db_name, table_name)
+
+            for row in cursor:
+                res.append(row[parameters.index(self.get_primary(db_name, table_name)[0].upper())])
+
+            return success.EasyGet(res)
+        else:
+            return error.UpdateError('The database name or table name is incorrect')
+
     def update(self, content: schemas.UpdateItem, api: str):
         if api != info.api_key:
             return error.ValidationError('Unable to verify API key')

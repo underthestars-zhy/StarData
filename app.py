@@ -34,3 +34,8 @@ def select(item: SelectItem, api: str):
 @app.get("/easy_get")
 def get_value(api: str, db_name: str, table_name: str, name: str, value):
     return data.easy_get(api, db_name, table_name, name, value)
+
+
+@app.get("/easy_get_all")
+def get_all_items(api: str, db_name: str, table_name: str):
+    return data.get_all_items(api, db_name, table_name)
