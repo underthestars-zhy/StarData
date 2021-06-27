@@ -3,12 +3,16 @@ import sqlite3
 import uuid
 import success
 import error
+import schemas
 from info import info
+import os
 
 
 def creat_db(db_data: dict):
-    with open("config/data.json", 'w') as f:
+    with open("./config/data.json", 'w') as f:
         json.dump(db_data, f)
+
+    os.mkdir("./database")
 
     for db in db_data["db"]:
         conn = sqlite3.connect(f'./database/{db["db_name"]}.db')
@@ -123,30 +127,33 @@ class StarData:
                 return False
         return False
 
-    def update(self, content: dict):
-        if str(content['key']).lower() != info.get_md5():
+    def update(self, content: schemas.UpdateItem, api: str):
+        if api != info.api_key:
+            return error.ValidationError('Unable to verify API key')
+
+        if str(content.key).lower() != info.get_md5():
             return error.ValidationError('The key is wrong, please check the salt and key')
 
         all_parameter = []
-        for i in content['new_data']:
-            for x in content['new_data'][i]:
+        for i in content.new_data:
+            for x in content.new_data[i]:
                 all_parameter.append(x)
 
-        if self.verification(content['db_name'], content['table_name'], all_parameter):
-            conn = sqlite3.connect(f"./database/{content['db_name']}.db")
+        if self.verification(content.db_name, content.table_name, all_parameter):
+            conn = sqlite3.connect(f"./database/{content.db_name}.db")
             c = conn.cursor()
-            table_name = content['table_name'].upper()
+            table_name = content.table_name.upper()
 
-            for u in content['new_data']:
+            for u in content.new_data:
                 sql_command = f"UPDATE {table_name} set "
                 count = 0
-                length = len(content['new_data'][u])
+                length = len(content.new_data[u])
 
-                for p in content['new_data'][u]:
+                for p in content.new_data[u]:
                     sql_command += str(p).upper()
                     sql_command += " = "
-                    sql_command += get_value(self.get_type(content['db_name'], content['table_name'], p),
-                                             content['new_data'][u][p])
+                    sql_command += get_value(self.get_type(content.db_name, content.table_name, p),
+                                             content.new_data[u][p])
 
                     if count != (length - 1):
                         sql_command += ", "
@@ -154,7 +161,7 @@ class StarData:
                     count += 1
 
                 sql_command += " where "
-                sql_command += content['conditions'][u]
+                sql_command += content.conditions[u]
 
                 c.execute(sql_command)
 
@@ -165,33 +172,36 @@ class StarData:
         else:
             return error.UpdateError('The database name or table name is incorrect')
 
-    def insert(self, content: dict):
-        if str(content['key']).lower() != info.get_md5():
+    def insert(self, content: schemas.InsertItem, api: str):
+        if api != info.api_key:
+            return error.ValidationError('Unable to verify API key')
+
+        if str(content.key).lower() != info.get_md5():
             return error.ValidationError('The key is wrong, please check the salt and key')
 
-        if self.verification(content['db_name'], content['table_name'], list(dict(content['insert_data']).keys())):
-            conn = sqlite3.connect(f"./database/{content['db_name']}.db")
+        if self.verification(content.db_name, content.table_name, list(content.insert_data.keys())):
+            conn = sqlite3.connect(f"./database/{content.db_name}.db")
             c = conn.cursor()
-            table_name = content['table_name'].upper()
+            table_name = content.table_name.upper()
             sql_command = "INSERT " + "INTO " + table_name + " "
             p_info = "("
             p_value = " VALUES ("
 
-            parameter_info = self.get_parameter_info(content['db_name'], content['table_name'])
+            parameter_info = self.get_parameter_info(content.db_name, content.table_name)
             length = len(parameter_info)
             count = 0
 
-            insert_keys = [str(x).upper() for x in dict(content['insert_data']).keys()]
-            insert_data = [str(content['insert_data'][x]) for x in dict(content['insert_data'])]
+            insert_keys = [str(x).upper() for x in dict(content.insert_data).keys()]
+            insert_data = [str(content.insert_data[x]) for x in dict(content.insert_data)]
 
             for p in parameter_info:
                 p_info += p
 
                 if p in insert_keys:
-                    p_value += get_value(self.get_type(content['db_name'], content['table_name'], p),
+                    p_value += get_value(self.get_type(content.db_name, content.table_name, p),
                                          insert_data[insert_keys.index(str(p).upper())])
                 else:
-                    p_value += get_default(self.get_type(content['db_name'], content['table_name'], p))
+                    p_value += get_default(self.get_type(content.db_name, content.table_name, p))
 
                 if count != (length - 1):
                     p_info += ", "
@@ -212,18 +222,21 @@ class StarData:
         else:
             return error.InsertError('The database name or table name is incorrect')
 
-    def delete(self, content: dict):
-        if str(content['key']).lower() != info.get_md5():
+    def delete(self, content: schemas.DeleteItem, api: str):
+        if api != info.api_key:
+            return error.ValidationError('Unable to verify API key')
+
+        if str(content.key).lower() != info.get_md5():
             return error.ValidationError('The key is wrong, please check the salt and key')
 
-        if self.verification(content['db_name'], content['table_name']):
-            conn = sqlite3.connect(f"./database/{content['db_name']}.db")
+        if self.verification(content.db_name, content.table_name):
+            conn = sqlite3.connect(f"./database/{content.db_name}.db")
             c = conn.cursor()
 
-            table_name = content['table_name'].upper()
+            table_name = content.table_name.upper()
             sql_command = "DELETE from "
             sql_command += f"{table_name} where "
-            sql_command += content['condition']
+            sql_command += content.condition
 
             c.execute(sql_command)
             conn.commit()
@@ -233,20 +246,23 @@ class StarData:
         else:
             return error.InsertError('The database name or table name is incorrect')
 
-    def select(self, content: dict):
-        if str(content['key']).lower() != info.get_md5():
+    def select(self, content: schemas.SelectItem, api: str):
+        if api != info.api_key:
+            return error.ValidationError('Unable to verify API key')
+
+        if str(content.key).lower() != info.get_md5():
             return error.ValidationError('The key is wrong, please check the salt and key')
 
-        if self.verification(content['db_name'], content['table_name']):
-            conn = sqlite3.connect(f"./database/{content['db_name']}.db")
+        if self.verification(content.db_name, content.table_name):
+            conn = sqlite3.connect(f"./database/{content.db_name}.db")
             c = conn.cursor()
-            table_name = content['table_name'].upper()
+            table_name = content.table_name.upper()
 
             sql_command = "SELECT "
             count = 0
-            length = len(content['select_parameter'])
+            length = len(content.select_parameter)
 
-            for p in content['select_parameter']:
+            for p in content.select_parameter:
                 sql_command += p
 
                 if count != (length - 1):
@@ -256,9 +272,9 @@ class StarData:
 
             sql_command += " from "
             sql_command += table_name
-            if content['other']:
+            if content.other:
                 sql_command += ' '
-                sql_command += content['other']
+                sql_command += content.other
             print(sql_command)
 
             cursor = c.execute(sql_command)
@@ -267,7 +283,7 @@ class StarData:
             for row in cursor:
                 _c = 0
                 res = {}
-                for p in content['select_parameter']:
+                for p in content.select_parameter:
                     res[p] = row[_c]
                 values.append(res)
 
@@ -276,6 +292,12 @@ class StarData:
             return success.Select("Successful search", values)
         else:
             return error.InsertError('The database name or table name is incorrect')
+
+    def get_data_info(self, api: str):
+        if api != info.api_key:
+            return error.ValidationError('Unable to verify API key')
+
+        return self.data
 
     def get_parameter_info(self, db_name: str, table_name: str) -> list:
         res = []
