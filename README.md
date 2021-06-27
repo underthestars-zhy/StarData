@@ -96,6 +96,11 @@
 * 默认值位`NULL`
 * 在where等操作中可以直接输入
 * 在SQL中对应`NULL`
+
+## EASY-API
+为了方便编写代码，我们提供了**EasyApi**。
+* [Python](https://github.com/underthestars-zhy/StarData-Python)
+
 ## API
 > 为了演示所有URL由`http://127.0.0.1:8000`代替
 
