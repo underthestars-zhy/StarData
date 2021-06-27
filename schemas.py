@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 
 
 class InsertItem(BaseModel):
@@ -30,3 +30,12 @@ class SelectItem(BaseModel):
     table_name: str
     select_parameter: list
     other: Optional[str] = None
+
+
+class EasySet(BaseModel):
+    key: str
+    db_name: str
+    table_name: str
+    primary: Any
+    name: str
+    value: Any

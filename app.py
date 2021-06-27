@@ -39,3 +39,8 @@ def get_value(api: str, db_name: str, table_name: str, name: str, value):
 @app.get("/easy_get_all")
 def get_all_items(api: str, db_name: str, table_name: str):
     return data.get_all_items(api, db_name, table_name)
+
+
+@app.post("/east_set")
+def easy_set(item: EasySet, api: str):
+    return data.easy_set(item, api)

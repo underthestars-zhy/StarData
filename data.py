@@ -223,6 +223,30 @@ class StarData:
         else:
             return error.UpdateError('The database name or table name is incorrect')
 
+    def easy_set(self, content: schemas.EasySet, api: str):
+        if api != info.api_key:
+            return error.ValidationError('Unable to verify API key')
+
+        if str(content.key).lower() != info.get_md5():
+            return error.ValidationError('The key is wrong, please check the salt and key')
+
+        if self.verification(content.db_name, content.table_name, [content.name]):
+            conn = sqlite3.connect(f"./database/{content.db_name}.db")
+            c = conn.cursor()
+            table_name = content.table_name.upper()
+            p = self.get_primary(content.db_name, content.table_name)
+
+            sql_command = f"UPDATE {table_name} set " + content.name.upper() + " = " + \
+                          get_value(self.get_type(content.db_name, content.table_name, content.name), content.value) + \
+                          f"where {p[0]}={get_value(p[1], content.primary)}"
+
+            c.execute(sql_command)
+            conn.commit()
+            conn.close()
+            return success.Success("Update data successfully")
+        else:
+            return error.InsertError('The database name or table name is incorrect')
+
     def insert(self, content: schemas.InsertItem, api: str):
         if api != info.api_key:
             return error.ValidationError('Unable to verify API key')
@@ -234,6 +258,7 @@ class StarData:
             conn = sqlite3.connect(f"./database/{content.db_name}.db")
             c = conn.cursor()
             table_name = content.table_name.upper()
+
             sql_command = "INSERT " + "INTO " + table_name + " "
             p_info = "("
             p_value = " VALUES ("
