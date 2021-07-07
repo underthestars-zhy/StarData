@@ -21,3 +21,15 @@ class EasyGet:
     def __init__(self, value):
         self.type = "get"
         self.value = value
+
+
+class EasyVerification:
+    def __init__(self, value):
+        self.type = "verification"
+        self.value = value
+
+
+class Context:
+    def __init__(self, context_id):
+        self.type = "get"
+        self.context_id = context_id

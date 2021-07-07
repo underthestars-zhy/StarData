@@ -9,15 +9,29 @@ import os
 from os.path import exists
 
 
-def creat_db(db_data: dict):
-    with open("./config/data.json", 'w') as f:
-        json.dump(db_data, f)
+def creat_db(db_data: dict, db_name: str = None):
+    if not db_name:
+        with open("./data/config/config.json", 'w') as f:
+            json.dump(db_data, f)
 
-    if not exists("./database"):
-        os.mkdir("./database")
+        if not exists("data"):
+            os.mkdir("data")
 
     for db in db_data["db"]:
-        conn = sqlite3.connect(f'./database/{db["db_name"]}.db')
+        if not db_name:
+            if not db['public']:
+                continue
+        else:
+            if db['public']:
+                continue
+            if str(db['db_name']).lower() != db_name.lower().split("-")[0]:
+                continue
+
+        name = db["db_name"]
+        if db_name:
+            name = db_name
+
+        conn = sqlite3.connect(f'data/db/{name}.db')
         c = conn.cursor()
 
         for table in db["db_table"]:
@@ -59,6 +73,8 @@ def get_type(p_type: str) -> str:
         return "DOUBLE"
     elif p_type.lower() == "en-str":
         return "TEXT"
+    elif p_type.lower() == "context":
+        return "TEXT"
     else:
         return "NULL"
 
@@ -74,6 +90,8 @@ def get_default(p_type: str) -> str:
         return "0.0"
     elif p_type.lower() == "en-str":
         return "'this is a null value'"
+    elif p_type.lower() == "context":
+        return "'nil'"
     else:
         return "NULL"
 
@@ -88,6 +106,8 @@ def get_value(p_type: str, raw: str) -> str:
     elif p_type.lower() == "double":
         return raw
     elif p_type.lower() == "en-str":
+        return f"'{raw}'"
+    elif p_type.lower() == "context":
         return f"'{raw}'"
     else:
         return raw
@@ -107,26 +127,28 @@ def get_json(file_path: str) -> dict:
 
 class StarData:
     def __init__(self):
-        new_data = get_json("./data.json")
-        old_data = get_json("./config/data.json")
+        new_data = get_json("config.json")
+        old_data = get_json("./data/config/config.json")
 
         if old_data == {}:
             creat_db(new_data)
 
         self.data = new_data
 
-    def verification(self, db_name: str, table_name: str, parameter_names: list = None) -> bool:
+    def verification(self, db_name: str, table_name: str = None, parameter_names: list = None) -> bool:
         for db in self.data['db']:
-            if str(db['db_name']).lower() == db_name.lower():
-                for table in db['db_table']:
-                    if str(table['table_name']).lower() == table_name.lower():
-                        if parameter_names:
-                            parameters = [str(x['parameter_name']).lower() for x in table['table_parameter']]
-                            for p in parameter_names:
-                                if str(p).lower() not in parameters:
-                                    return False
-                        return True
-                return False
+            if str(db['db_name']).lower().split("-")[0] == db_name.lower():
+                if table_name:
+                    for table in db['db_table']:
+                        if str(table['table_name']).lower() == table_name.lower():
+                            if parameter_names:
+                                parameters = [str(x['parameter_name']).lower() for x in table['table_parameter']]
+                                for p in parameter_names:
+                                    if str(p).lower() not in parameters:
+                                        return False
+                            return True
+                    return False
+                return True
         return False
 
     def easy_get(self, api: str, db_name: str, table_name: str, name: str, value):
@@ -134,7 +156,7 @@ class StarData:
             return error.ValidationError('Unable to verify API key')
 
         if self.verification(db_name, table_name):
-            conn = sqlite3.connect(f"./database/{db_name}.db")
+            conn = sqlite3.connect(f"data/db/{db_name}.db")
             c = conn.cursor()
             table_name = table_name.upper()
             p = self.get_primary(db_name, table_name)
@@ -153,14 +175,14 @@ class StarData:
 
             return success.EasyGet(v)
         else:
-            return error.UpdateError('The database name or table name is incorrect')
+            return error.UpdateError('The data name or table name is incorrect')
 
     def get_all_items(self, api: str, db_name: str, table_name: str):
         if api != info.api_key:
             return error.ValidationError('Unable to verify API key')
 
         if self.verification(db_name, table_name):
-            conn = sqlite3.connect(f"./database/{db_name}.db")
+            conn = sqlite3.connect(f"data/db/{db_name}.db")
             c = conn.cursor()
             table_name = table_name.upper()
 
@@ -172,11 +194,34 @@ class StarData:
             parameters = self.get_parameter_info(db_name, table_name)
 
             for row in cursor:
-                res.append(row[parameters.index(self.get_primary(db_name, table_name)[0].upper())])
+                table = {}
+                count = 0
+                for p in parameters:
+                    table[p] = row[count]
+                    count += 1
+                res.append(table)
 
             return success.EasyGet(res)
         else:
-            return error.UpdateError('The database name or table name is incorrect')
+            return error.UpdateError('The data name or table name is incorrect')
+
+    def creat_db(self, api: str, db_name: str):
+        if api != info.api_key:
+            return error.ValidationError('Unable to verify API key')
+
+        if self.verification(db_name):
+            context = str(uuid.uuid1())
+            creat_db(self.data, f"{db_name}-{context}")
+
+            return success.Context(context)
+        else:
+            return error.CreatDBError('The data name or table name is incorrect')
+
+    def easy_verification(self, api: str, private_key: str, salt: str, db_name: str):
+        if api == info.api_key and info.private_key == private_key and info.salt == salt and self.verification(db_name):
+            return success.EasyVerification(True)
+        else:
+            return success.EasyVerification(False)
 
     def update(self, content: schemas.UpdateItem, api: str):
         if api != info.api_key:
@@ -191,7 +236,7 @@ class StarData:
                 all_parameter.append(x)
 
         if self.verification(content.db_name, content.table_name, all_parameter):
-            conn = sqlite3.connect(f"./database/{content.db_name}.db")
+            conn = sqlite3.connect(f"data/db/{content.db_name}.db")
             c = conn.cursor()
             table_name = content.table_name.upper()
 
@@ -221,7 +266,7 @@ class StarData:
 
             return success.Success("Update data successfully")
         else:
-            return error.UpdateError('The database name or table name is incorrect')
+            return error.UpdateError('The data name or table name is incorrect')
 
     def easy_set(self, content: schemas.EasySet, api: str):
         if api != info.api_key:
@@ -231,7 +276,7 @@ class StarData:
             return error.ValidationError('The key is wrong, please check the salt and key')
 
         if self.verification(content.db_name, content.table_name, [content.name]):
-            conn = sqlite3.connect(f"./database/{content.db_name}.db")
+            conn = sqlite3.connect(f"data/db/{content.db_name}.db")
             c = conn.cursor()
             table_name = content.table_name.upper()
             p = self.get_primary(content.db_name, content.table_name)
@@ -245,7 +290,7 @@ class StarData:
             conn.close()
             return success.Success("Update data successfully")
         else:
-            return error.InsertError('The database name or table name is incorrect')
+            return error.InsertError('The data name or table name is incorrect')
 
     def insert(self, content: schemas.InsertItem, api: str):
         if api != info.api_key:
@@ -255,7 +300,7 @@ class StarData:
             return error.ValidationError('The key is wrong, please check the salt and key')
 
         if self.verification(content.db_name, content.table_name, list(content.insert_data.keys())):
-            conn = sqlite3.connect(f"./database/{content.db_name}.db")
+            conn = sqlite3.connect(f"data/db/{content.db_name}.db")
             c = conn.cursor()
             table_name = content.table_name.upper()
 
@@ -296,7 +341,7 @@ class StarData:
 
             return success.Success(f"Insert data successfully {p_value}")
         else:
-            return error.InsertError('The database name or table name is incorrect')
+            return error.InsertError('The data name or table name is incorrect')
 
     def delete(self, content: schemas.DeleteItem, api: str):
         if api != info.api_key:
@@ -306,7 +351,7 @@ class StarData:
             return error.ValidationError('The key is wrong, please check the salt and key')
 
         if self.verification(content.db_name, content.table_name):
-            conn = sqlite3.connect(f"./database/{content.db_name}.db")
+            conn = sqlite3.connect(f"data/db/{content.db_name}.db")
             c = conn.cursor()
 
             table_name = content.table_name.upper()
@@ -320,7 +365,7 @@ class StarData:
 
             return success.Success("Data deleted successfully")
         else:
-            return error.InsertError('The database name or table name is incorrect')
+            return error.InsertError('The data name or table name is incorrect')
 
     def select(self, content: schemas.SelectItem, api: str):
         if api != info.api_key:
@@ -330,7 +375,7 @@ class StarData:
             return error.ValidationError('The key is wrong, please check the salt and key')
 
         if self.verification(content.db_name, content.table_name):
-            conn = sqlite3.connect(f"./database/{content.db_name}.db")
+            conn = sqlite3.connect(f"data/db/{content.db_name}.db")
             c = conn.cursor()
             table_name = content.table_name.upper()
 
@@ -367,7 +412,7 @@ class StarData:
 
             return success.Select("Successful search", values)
         else:
-            return error.InsertError('The database name or table name is incorrect')
+            return error.InsertError('The data name or table name is incorrect')
 
     def get_data_info(self, api: str):
         if api != info.api_key:

@@ -4,7 +4,10 @@ from hashlib import md5
 class Info:
     api_key = "ahdi1e3"
     private_key = "fhdiud1dj"
-    salt = "star"
+
+    @property
+    def salt(self) -> str:
+        return "star"
 
     def get_md5(self) -> str:
         md5_obj = md5()

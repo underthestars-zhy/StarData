@@ -16,3 +16,6 @@ class InsertError(Error):
 
 class UpdateError(Error):
     _type = "update error"
+
+class CreatDBError(Error):
+    _type = "creat db error"

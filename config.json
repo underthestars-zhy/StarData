@@ -1,0 +1,63 @@
+{
+  "data_version": "1.0.0",
+  "db": [
+    {
+      "db_name": "user",
+      "public": true,
+      "db_table": [
+        {
+          "table_name": "user",
+          "table_parameter": [
+            {
+              "parameter_name": "id",
+              "is_primary": true,
+              "not_null": true,
+              "parameter_type": "uuid"
+            },
+            {
+              "parameter_name": "name",
+              "is_primary": false,
+              "not_null": true,
+              "parameter_type": "string"
+            },
+            {
+              "parameter_name": "message",
+              "is_primary": false,
+              "not_null": true,
+              "parameter_type": "context"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "db_name": "message",
+      "public": false,
+      "db_table": [
+        {
+          "table_name": "message",
+          "table_parameter": [
+            {
+              "parameter_name": "id",
+              "is_primary": true,
+              "not_null": true,
+              "parameter_type": "uuid"
+            },
+            {
+              "parameter_name": "title",
+              "is_primary": false,
+              "not_null": true,
+              "parameter_type": "string"
+            },
+            {
+              "parameter_name": "body",
+              "is_primary": false,
+              "not_null": true,
+              "parameter_type": "string"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
