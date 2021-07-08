@@ -13,7 +13,7 @@ def get_db_info(api: str):
 
 @app.get("/get_db_config")
 def get_db_info(api: str, version: str):
-    return data.get_data_info(api)
+    return data.get_data_config(api, version)
 
 
 @app.post("/insert")

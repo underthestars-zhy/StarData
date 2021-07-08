@@ -177,6 +177,15 @@ class StarData:
         else:
             return error.UpdateError('The data name or table name is incorrect')
 
+    def get_data_config(self, api: str, version: str):
+        if api != info.api_key:
+            return error.ValidationError('Unable to verify API key')
+
+        if self.data['data_version'] == version:
+            return self.data
+        else:
+            pass  # TODO: Find in history
+
     def get_all_items(self, api: str, db_name: str, table_name: str):
         if api != info.api_key:
             return error.ValidationError('Unable to verify API key')
